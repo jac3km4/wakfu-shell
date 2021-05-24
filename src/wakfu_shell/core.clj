@@ -14,14 +14,14 @@
         keys (map #(-> % (nth 1) (nth 0)) values)]
     (zipmap keys values)))
 
-(defn find-class
+(defn- find-class
   ([^Symbol class-sym]
    (let [native-name (jvm/native-name (name class-sym))
          class-shorthand "c/a/w/c"
          name (.replaceFirst native-name class-shorthand "com/ankamagames/wakfu/client")]
      (get mappings name))))
 
-(defn find-method
+(defn- find-method
   ([^Symbol class-sym ^Symbol method-sym]
    (let [[[_, _, obfuscated-methods], [_, _, methods]] (find-class class-sym)
          [i] (->> (map-indexed vector methods)
@@ -47,6 +47,9 @@
                              first)]
      (.invoke method obj (into-array Object args)))))
 
+(defn reload []
+  (clj/load-script "prelude.clj"))
+
 (defn -main [& args]
   (doseq [file (-> (System/getProperty "user.dir")
                    (Paths/get (into-array String ["lib"]))
@@ -57,4 +60,5 @@
   (let [client (-> (ClassLoader/getSystemClassLoader) (.loadClass "com.ankamagames.wakfu.client.WakfuClient"))
         main (.getMethod client "main" (into-array Class [(class (make-array String 0))]))]
     (.invoke main nil (into-array Object [(into-array String [])])))
-  (clj/repl :init #(require '[wakfu-shell.core :as sh])))
+  (clj/repl :init #(do (require '[wakfu-shell.core :as sh])
+                       (reload))))
