@@ -1,8 +1,8 @@
-(ns wakfu-repl.core
+(ns wakfu-shell.core
   (:require [clojure.main :as clj])
   (:require [clojure.java.io :as io])
   (:require [clj-cbor.core :as cbor])
-  (:require [wakfu-repl.jvm :as jvm])
+  (:require [wakfu-shell.jvm :as jvm])
   (:gen-class)
   (:import (clojure.lang Symbol)
            (java.lang.reflect Method)
@@ -57,4 +57,4 @@
   (let [client (-> (ClassLoader/getSystemClassLoader) (.loadClass "com.ankamagames.wakfu.client.WakfuClient"))
         main (.getMethod client "main" (into-array Class [(class (make-array String 0))]))]
     (.invoke main nil (into-array Object [(into-array String [])])))
-  (clj/repl :init #(require '[wakfu-repl.core :as re])))
+  (clj/repl :init #(require '[wakfu-shell.core :as sh])))

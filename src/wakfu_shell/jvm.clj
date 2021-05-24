@@ -1,4 +1,4 @@
-(ns wakfu-repl.jvm
+(ns wakfu-shell.jvm
   (:import (java.net URLClassLoader URL)
            (java.lang.reflect Method)))
 
