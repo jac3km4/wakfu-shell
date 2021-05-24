@@ -3,3 +3,40 @@ main
 (-main)
 :q
 exit
+class-descriptor (class "")
+(class-descriptor (class ""))
+:r
+(class-descriptor (class ""))
+exit
+(class-descriptor (class ""))
+(mappings)
+(use 'wakfu-repl.core)
+(mappings)
+(use 'wakfu-repl.core)
+(find-class)
+:q
+exit
+(ns wakfu-repl.core)
+(find-class)
+exit
+(class-descriptor (class ""))
+(class-descriptor (Byte/Type))
+(class-descriptor (Byte/TYPE))
+(class-descriptor (Void/TYPE))
+(class-descriptor (class "a"))
+(class-descriptor (the-class "a"))
+(class-descriptor (class "a"))
+:r
+reload
+(use 'wakfu-repl.core :reload)
+(class-descriptor (class "a"))
+(use 'wakfu-repl.core :reload)
+(class-descriptor (class "a"))
+(class-descriptor (class [1]))
+(class-descriptor (class (into-array [1])))
+(class-descriptor (class (into-array [2])))
+(class-descriptor (class (into-array Int/TYPE [2])))
+(class-descriptor (class (into-array Integer/TYPE [2])))
+(use 'wakfu-repl.core :reload)
+(class-descriptor (class (into-array Integer/TYPE [2])))
+exit
