@@ -2,32 +2,24 @@
   (:require [clojure.main :as clj])
   (:require [clojure.java.io :as io])
   (:require [clj-cbor.core :as cbor])
+  (:require [wakfu-repl.jvm :as jvm])
   (:gen-class)
-  (:import (java.net URLClassLoader URL)
-           (clojure.lang Symbol)
-           (wakfu_repl Utils)
+  (:import (clojure.lang Symbol)
            (java.lang.reflect Method)
            (clojure.core Vec)
            (java.nio.file Paths)))
-
-(defn add-system-classpath
-  [^URL url]
-  (let [field (aget (.getDeclaredFields URLClassLoader) 0)]
-    (.setAccessible field true)
-    (let [ucp (.get field (ClassLoader/getSystemClassLoader))]
-      (.addURL ucp url))))
 
 (def mappings
   (let [values (-> "classes.cbor" io/resource cbor/decode)
         keys (map #(-> % (nth 1) (nth 0)) values)]
     (zipmap keys values)))
 
-(def class-shorthand "c.a.w.c")
-
 (defn find-class
   ([^Symbol class-sym]
-   (let [escaped (.replace (.replaceFirst (name class-sym) class-shorthand "com.ankamagames.wakfu.client") "." "/")]
-     (get mappings escaped))))
+   (let [native-name (jvm/native-name (name class-sym))
+         class-shorthand "c/a/w/c"
+         name (.replaceFirst native-name class-shorthand "com/ankamagames/wakfu/client")]
+     (get mappings name))))
 
 (defn find-method
   ([^Symbol class-sym ^Symbol method-sym]
@@ -41,7 +33,7 @@
   ([^Symbol class-sym]
    (let [[[obfuscated-name]] (find-class class-sym)
          java-name (.replace obfuscated-name "/" ".")]
-     (-> (ClassLoader/getSystemClassLoader) (.loadClass java-name) (.newInstance)))))
+     (-> (ClassLoader/getSystemClassLoader) (.loadClass java-name) .newInstance))))
 
 (defn call
   ([obj, ^Symbol method-sym, ^Vec args]
@@ -51,7 +43,7 @@
          ^Method method (->> (.getMethods class)
                              seq
                              (filter #(= name (.getName %)))
-                             (filter #(= descriptor (Utils/getMethodDescriptor %)))
+                             (filter #(= descriptor (jvm/method-descriptor %)))
                              first)]
      (.invoke method obj (into-array Object args)))))
 
@@ -60,7 +52,7 @@
                    (Paths/get (into-array String ["lib"]))
                    .toFile
                    file-seq)]
-    (add-system-classpath (.toURL file)))
+    (jvm/add-system-classpath (.toURL file)))
 
   (let [client (-> (ClassLoader/getSystemClassLoader) (.loadClass "com.ankamagames.wakfu.client.WakfuClient"))
         main (.getMethod client "main" (into-array Class [(class (make-array String 0))]))]

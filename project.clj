@@ -4,5 +4,4 @@
   :main ^:skip-aot wakfu-repl.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}}
-  :source-paths ["src"]
-  :java-source-paths ["src/java"])
+  :source-paths ["src"])
