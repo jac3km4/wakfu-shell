@@ -22,13 +22,16 @@
   (let [message (com.ankamagames.wakfu.client.console.command.debug.MixDebuggerCommand.)]
     (.a message nil nil (java.util.ArrayList. []))))
 
-(defn send-message [^String contents]
-  (let [message (com.ankamagames.wakfu.client.chat.console.command.VicinityContentCommand.)]
-    (.a message nil, nil (java.util.ArrayList. [contents, contents, contents]))))
+(defn send-message [& {:keys [body chat]}]
+  (let [message (case chat
+                  :guild (com.ankamagames.wakfu.client.chat.console.command.GuildMessageCommand.)
+                  :team (com.ankamagames.wakfu.client.chat.console.command.TeamMessageCommand.)
+                  :party (com.ankamagames.wakfu.client.chat.console.command.PartyPrivateMessageCommand.)
+                  (com.ankamagames.wakfu.client.chat.console.command.VicinityContentCommand.))]
+    (.a message nil, nil (java.util.ArrayList. [body, body, body]))))
 
-(defn send-item-link [^String name, ^Integer id]
-  (let [message (com.ankamagames.wakfu.client.chat.console.command.VicinityContentCommand.)
-        contents (str "<u id=\"item_[0]" id "\">" name "</u>")]
-    (.a message nil, nil (java.util.ArrayList. [contents, contents, contents]))))
+(defn send-item-link [& {:keys [id name chat]}]
+  (let [body (str "<u id=\"item_[0]" id "\">" name "</u>")]
+    (send-message :body body :chat chat)))
 
 (disable-loggers)
