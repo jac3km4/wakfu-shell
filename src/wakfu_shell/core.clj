@@ -23,7 +23,7 @@
 
 (defn- find-member
   ([^String class-name ^String member-name, ^Symbol kind]
-   (let [index (condp = kind :field 1 :method 2)
+   (let [index (case kind :field 1 :method 2)
          [obfuscated, unobfuscated] (find-class class-name real-classes)
          [i] (->> (nth unobfuscated index)
                   (map-indexed vector)
@@ -53,7 +53,7 @@
 
 (defn make
   ([^Symbol class-sym]
-   (let [[[obfuscated-name]] (find-class class-sym real-classes)
+   (let [[[obfuscated-name]] (find-class (name class-sym) real-classes)
          java-name (.replace obfuscated-name "/" ".")]
      (-> (ClassLoader/getSystemClassLoader) (.loadClass java-name) .newInstance))))
 
@@ -65,7 +65,7 @@
 
 (defn call-static
   ([^Symbol class-sym, ^Symbol method-sym, ^Vec args]
-   (let [[[obfuscated-name]] (find-class class-sym real-classes)
+   (let [[[obfuscated-name]] (find-class (name class-sym) real-classes)
          class (.loadClass (ClassLoader/getSystemClassLoader) obfuscated-name)]
      (call-with nil class (name class-sym) (name method-sym) args))))
 
@@ -77,7 +77,7 @@
 
 (defn get-field-static
   ([^Symbol class-sym, ^Symbol field-sym]
-   (let [[[obfuscated-name]] (find-class class-sym real-classes)
+   (let [[[obfuscated-name]] (find-class (name class-sym) real-classes)
          class (.loadClass (ClassLoader/getSystemClassLoader) obfuscated-name)]
      (get-with nil class (name class-sym) (name field-sym)))))
 
