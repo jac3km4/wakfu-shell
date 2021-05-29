@@ -7,6 +7,10 @@
     (when (instance? org.apache.log4j.ConsoleAppender appender)
       (.removeAppender (org.apache.log4j.Logger/getRootLogger) appender))))
 
+(defn get-translation [^Integer cat, ^Integer id]
+  (let [translator (sh/call-static :com.ankama.wakfu.utils.translator.Translator :getInstance [])]
+    (.a translator cat id (into-array Object []))))
+
 (defn print-game-version []
   (sh/call-static :com.ankamagames.wakfu.client.WakfuClientVersion :main [(into-array String [])]))
 
@@ -31,7 +35,8 @@
     (.a message nil, nil (java.util.ArrayList. [body, body, body]))))
 
 (defn send-item-link [& {:keys [id name chat]}]
-  (let [body (str "<u id=\"item_[0]" id "\">" name "</u>")]
+  (let [actual-name (if (nil? name) (get-translation 15 id) name)
+        body (str "<u id=\"item_[0]" id "\">" actual-name "</u>")]
     (send-message :body body :chat chat)))
 
 (disable-loggers)

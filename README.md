@@ -18,10 +18,10 @@ nil
 clojure.core=> (prelude/toggle-render-tree-debug)
 nil
 ; send a message in the chat
-clojure.core=> (prelude/send-message "hello")
+clojure.core=> (prelude/send-message :body "hello")
 nil
 ; link an item link in the chat
-clojure.core=> (prelude/send-item-link "Feathered Costume" 28675)
+clojure.core=> (prelude/send-item-link :id 28675)
 nil
 ```
 
