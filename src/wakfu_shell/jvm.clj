@@ -10,8 +10,8 @@
       (.addURL ucp url))))
 
 (defn native-name
-  [^String class-sym]
-  (.replace (name class-sym) "." "/"))
+  [^String class-name]
+  (.replace class-name "." "/"))
 
 (defn class-descriptor
   [^Class class]
